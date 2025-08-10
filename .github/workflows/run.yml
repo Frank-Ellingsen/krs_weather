@@ -7,6 +7,20 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: Pia&Victor0935
+          MYSQL_DATABASE: krs_weather_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -19,6 +33,9 @@ jobs:
       - name: Install dependencies
         run: |
           pip install requests pandas mysql-connector-python
+
+      - name: Wait for MySQL to be ready
+        run: sleep 30  # Give MySQL time to initialize
 
       - name: Run main.py
         run: python main.py
